@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Text Scrambler</title>
+<meta name="description" content="Scrambled Text / Texte Brouillé : transformez un texte en image lisible par un humain, difficile pour un OCR.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same one-column workbench as the tool pages — header, then a panel holding the two language choices */
+:root {
+  --bg: #eef0ea; --panel: #fbfcf8; --ink: #1d231c; --muted: #5f6a5c;
+  --line: #cfd6c8; --accent: #2f6b4f; --accent-ink: #ffffff;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #151a16; --panel: #1e241f; --ink: #e6ebe2; --muted: #9aa695;
+  --line: #333d34; --accent: #7cc6a0; --accent-ink: #10231a; color-scheme: dark } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.lede + .lede { margin-top: 2px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 16px; }
+.lbl { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.choice { display: grid; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
+.choice:hover { border-color: var(--accent); transform: translateY(-1px); }
+.choice:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.choice .name { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.1; }
+.choice .desc { color: var(--muted); font-size: 14px; }
+.choice .go { justify-self: start; margin-top: 6px; font: 500 14px var(--body); border-radius: 8px; padding: 8px 14px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+.choice.suggested { border-color: var(--accent); }
+.choice.suggested .go { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.tag { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); min-height: 1.2em; }
+.docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.doc { display: grid; gap: 4px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink); text-decoration: none; transition: border-color .15s; }
+.doc:hover { border-color: var(--accent); }
+.doc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.doc .name { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.2; }
+.doc .name::after { content: " →"; color: var(--accent); }
+.doc .desc { color: var(--muted); font-size: 13px; }
+footer { font-size: 13px; color: var(--muted); }
+footer a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .choice { transition: none; } .choice:hover { transform: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Text Scrambler</h1>
+    <p class="lede">Turn your text into an image that a human can read but OCR struggles with.</p>
+    <p class="lede">Transformez votre texte en image lisible par un humain, mais difficile à lire pour un OCR.</p>
+  </header>
+
+  <section class="panel" aria-labelledby="pick">
+    <span class="lbl" id="pick">Choose your language · Choisissez votre langue</span>
+    <div class="choices">
+      <a class="choice" id="en" href="text-scrambler-en.html" hreflang="en" lang="en">
+        <span class="tag"></span>
+        <span class="name">Scrambled Text</span>
+        <span class="desc">English version</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="choice" id="fr" href="texte-brouille-fr.html" hreflang="fr" lang="fr">
+        <span class="tag"></span>
+        <span class="name">Texte Brouillé</span>
+        <span class="desc">Version française</span>
+        <span class="go">Ouvrir →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="doc">
+    <span class="lbl" id="doc">Documentation</span>
+    <div class="docs">
+      <a class="doc" href="documentation-en.html" hreflang="en" lang="en">
+        <span class="name">User guide</span>
+        <span class="desc">Settings, tips for large fonts, maximizing OCR resistance, limitations.</span>
+      </a>
+      <a class="doc" href="documentation-fr.html" hreflang="fr" lang="fr">
+        <span class="name">Guide d'utilisation</span>
+        <span class="desc">Réglages, conseils pour les grandes polices, résistance à l'OCR, limites.</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    Source: <a href="https://github.com/botelectro9/Text-Scrambler">github.com/botelectro9/Text-Scrambler</a>
+  </footer>
+</div>
+
+<script>
+  // Highlight the version matching the browser language
+  (function () {
+    var langs = navigator.languages || [navigator.language || ''];
+    var fr = String(langs[0] || '').toLowerCase().indexOf('fr') === 0;
+    var el = document.getElementById(fr ? 'fr' : 'en');
+    el.classList.add('suggested');
+    el.querySelector('.tag').textContent = fr ? 'Suggérée pour vous' : 'Suggested for you';
+  })();
+</script>
+</body>
+</html>

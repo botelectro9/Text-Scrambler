@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Texte Brouillé — Documentation</title>
+<meta name="description" content="Documentation de Texte Brouillé : téléchargement, installation, utilisation, réglages conseillés, résistance à l'OCR, limites et personnalisation.">
+<link rel="alternate" hreflang="en" href="documentation-en.html">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same one-column workbench as index.html — header, table of contents, then one panel per section */
+:root {
+  --bg: #eef0ea; --panel: #fbfcf8; --ink: #1d231c; --muted: #5f6a5c;
+  --line: #cfd6c8; --accent: #2f6b4f; --accent-ink: #ffffff;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --code-bg: rgba(47, 107, 79, 0.08);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #151a16; --panel: #1e241f; --ink: #e6ebe2; --muted: #9aa695;
+  --line: #333d34; --accent: #7cc6a0; --accent-ink: #10231a;
+  --code-bg: rgba(124, 198, 160, 0.10); color-scheme: dark } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+h3 { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.2; margin: 4px 0 0; }
+p, ul, ol { margin: 0; }
+ul, ol { padding-left: 1.4em; display: grid; gap: 6px; }
+a { color: var(--accent); }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.nav a { font: 500 14px var(--body); border-radius: 8px; padding: 8px 14px; text-decoration: none;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); transition: border-color .15s; }
+.nav a:hover { border-color: var(--accent); }
+.nav a.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.nav a:focus-visible, .toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; scroll-margin-top: 16px; }
+.lbl { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.toc ol { gap: 4px; }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+code { font-family: var(--mono); font-size: 0.9em; background: var(--code-bg); border-radius: 4px; padding: 0.1em 0.35em; }
+pre { margin: 0; overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+pre code { background: none; padding: 0; font-size: 13px; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { font-family: var(--mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg); }
+td.nowrap { white-space: nowrap; }
+.note { border-left: 3px solid var(--accent); padding: 8px 12px; background: var(--bg); border-radius: 0 8px 8px 0; color: var(--ink); }
+footer { font-size: 13px; color: var(--muted); }
+footer a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .nav a { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Texte Brouillé — Documentation</h1>
+    <p class="lede">Transformez votre texte en image lisible par un humain, mais difficile à lire pour un OCR.</p>
+    <nav class="nav" aria-label="Navigation">
+      <a href="index.html">← Accueil</a>
+      <a class="primary" href="texte-brouille-fr.html">Ouvrir l'outil</a>
+      <a href="documentation-en.html" hreflang="en" lang="en">English version</a>
+    </nav>
+  </header>
+
+  <nav class="panel toc" aria-labelledby="toc-title">
+    <span class="lbl" id="toc-title">Sommaire</span>
+    <ol>
+      <li><a href="#presentation">Présentation</a></li>
+      <li><a href="#telecharger">Télécharger</a></li>
+      <li><a href="#recuperer">Comment récupérer les fichiers sur votre ordinateur</a></li>
+      <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#utilisation">Utilisation</a></li>
+      <li><a href="#animations">Animations</a></li>
+      <li><a href="#reglages-conseilles">Réglages conseillés</a></li>
+      <li><a href="#grandes-polices">Conseils pour les grandes polices</a></li>
+      <li><a href="#resistance-ocr">Maximiser la résistance à l'OCR</a></li>
+      <li><a href="#image-produite">Image produite</a></li>
+      <li><a href="#limites">Limites</a></li>
+      <li><a href="#fonctionnement">Fonctionnement</a></li>
+      <li><a href="#personnalisation">Personnalisation</a></li>
+      <li><a href="#licence">Licence</a></li>
+    </ol>
+  </nav>
+
+  <section class="panel" id="presentation" aria-labelledby="h-presentation">
+    <h2 id="h-presentation">Présentation</h2>
+    <p><strong>Texte Brouillé</strong> est une page HTML/JavaScript en un seul fichier qui transforme un texte en image. Les lettres sont déformées et l'image est couverte de bruit, de lettres leurres, de traits qui barrent le texte et d'un filigrane. Un humain peut la lire, alors que la reconnaissance automatique de texte (OCR) a beaucoup plus de mal.</p>
+  </section>
+
+  <section class="panel" id="telecharger" aria-labelledby="h-telecharger">
+    <h2 id="h-telecharger">Télécharger</h2>
+    <p><strong>Dépôt :</strong> <a href="https://github.com/botelectro9/Text-Scrambler">https://github.com/botelectro9/Text-Scrambler</a></p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Fichier</th><th scope="col">Langue</th><th scope="col">Lien direct</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>text-scrambler-en.html</code></td><td>English</td><td><a href="https://github.com/botelectro9/Text-Scrambler/raw/origin/text-scrambler-en.html" hreflang="en">Download</a></td></tr>
+          <tr><td><code>texte-brouille-fr.html</code></td><td>Français</td><td><a href="https://github.com/botelectro9/Text-Scrambler/raw/origin/texte-brouille-fr.html">Télécharger</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Si le lien affiche le fichier comme du texte dans votre navigateur, faites un clic droit dessus et choisissez <strong>Enregistrer le lien sous…</strong> (le nom doit se terminer par <code>.html</code>).</p>
+  </section>
+
+  <section class="panel" id="recuperer" aria-labelledby="h-recuperer">
+    <h2 id="h-recuperer">Comment récupérer les fichiers sur votre ordinateur</h2>
+
+    <h3>Option 1 – Tout télécharger en ZIP (le plus simple)</h3>
+    <ol>
+      <li>Ouvrez <a href="https://github.com/botelectro9/Text-Scrambler">https://github.com/botelectro9/Text-Scrambler</a></li>
+      <li>Cliquez sur le bouton vert <strong>Code</strong>, puis sur <strong>Download ZIP</strong>.</li>
+      <li>Décompressez l'archive.</li>
+      <li>Double-cliquez sur <code>texte-brouille-fr.html</code> (ou <code>text-scrambler-en.html</code>) pour l'ouvrir dans votre navigateur.</li>
+    </ol>
+
+    <h3>Option 2 – Télécharger un seul fichier</h3>
+    <ol>
+      <li>Dans le dépôt, cliquez sur le nom du fichier (par exemple <code>texte-brouille-fr.html</code>).</li>
+      <li>Cliquez sur le bouton <strong>Download raw file</strong> (icône flèche vers le bas, en haut à droite de l'aperçu du fichier).</li>
+      <li>Vérifiez que le fichier enregistré se termine bien par <strong><code>.html</code></strong>. Certains navigateurs ajoutent <code>.txt</code> (par exemple <code>texte-brouille-fr.html.txt</code>) ou l'enregistrent sans extension. Dans ce cas, renommez-le pour qu'il se termine par <code>.html</code>. Sous Windows, activez <strong>Affichage → Extensions de noms de fichiers</strong> dans l'Explorateur pour voir la vraie extension ; sous macOS, utilisez <strong>Lire les informations → Nom et extension</strong>.</li>
+      <li>Ouvrez le fichier dans votre navigateur.</li>
+    </ol>
+    <p class="note">N'utilisez pas « Enregistrer la page sous » sur l'aperçu GitHub : cela enregistre la page de GitHub, pas l'outil.</p>
+
+    <h3>Option 3 – Avec Git</h3>
+<pre><code>git clone https://github.com/botelectro9/Text-Scrambler.git
+cd Text-Scrambler</code></pre>
+    <p>Ouvrez ensuite l'un des fichiers <code>.html</code> dans votre navigateur.</p>
+  </section>
+
+  <section class="panel" id="fonctionnalites" aria-labelledby="h-fonctionnalites">
+    <h2 id="h-fonctionnalites">Fonctionnalités</h2>
+    <ul>
+      <li>Chaque caractère a sa propre police, taille, rotation, inclinaison et couleur.</li>
+      <li>Une ondulation est appliquée à toute l'image.</li>
+      <li>Des lettres leurres discrètes sont dispersées en arrière-plan.</li>
+      <li>Des courbes traversent le texte et de petits arcs passent sur certaines lettres.</li>
+      <li>Un filigrane diagonal répété, au texte personnalisable.</li>
+      <li>Du bruit de pixels et des points colorés.</li>
+      <li>Choix de la résolution de l'image (préréglages téléphone, tablette et ordinateur, ou personnalisée), avec un texte centré et réduit automatiquement s'il ne tient pas.</li>
+      <li>Bouton « Autre variante » pour obtenir une autre disposition aléatoire du même texte.</li>
+      <li>Export en PNG (téléchargement ou copie dans le presse-papiers).</li>
+      <li><strong>Animations</strong> exportées en GIF ou en vidéo (WebM) : lettres fragmentées, éventuellement en mouvement pour que l'empilement des images ne les reconstitue pas, avec des perturbations dynamiques qui changent à chaque image.</li>
+      <li>Thème clair et sombre, fonctionne sur ordinateur et mobile.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="installation" aria-labelledby="h-installation">
+    <h2 id="h-installation">Installation</h2>
+    <p>Aucune installation, compilation ni serveur nécessaire. Tout fonctionne dans le navigateur.</p>
+    <ol>
+      <li>Téléchargez <code>texte-brouille-fr.html</code> (voir <a href="#telecharger">Télécharger</a>).</li>
+      <li>Ouvrez-le dans un navigateur récent (Chrome, Firefox, Safari, Edge).</li>
+    </ol>
+    <p>Vous pouvez aussi déposer le fichier sur n'importe quel hébergement statique (GitHub Pages, Netlify, votre propre serveur).</p>
+  </section>
+
+  <section class="panel" id="utilisation" aria-labelledby="h-utilisation">
+    <h2 id="h-utilisation">Utilisation</h2>
+    <ol>
+      <li>Tapez ou collez votre texte dans le champ <strong>Votre texte</strong>. Les retours à la ligne sont conservés ; les lignes longues passent à la ligne automatiquement.</li>
+      <li>Ajustez les réglages :
+        <div class="table-scroll" style="margin-top: 10px;">
+          <table>
+            <thead>
+              <tr><th scope="col">Réglage</th><th scope="col">Plage</th><th scope="col">Effet</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Déformation</td><td class="nowrap">0–10</td><td>Rotation, inclinaison, variation de taille, décalage vertical et force de l'ondulation</td></tr>
+              <tr><td>Bruit</td><td class="nowrap">0–10</td><td>Intensité du bruit de pixels et des points, et nombre de traits et d'arcs quand <strong>Traits parasites</strong> est coché</td></tr>
+              <tr><td>Leurres</td><td class="nowrap">0–10</td><td>Densité des lettres leurres en arrière-plan, quand <strong>Lettres leurres</strong> est coché</td></tr>
+              <tr><td>Taille</td><td class="nowrap">28–300 px</td><td>Taille de police de base (165 par défaut, adaptée à la résolution par défaut 1080×1350). Utilisez le curseur ou tapez la valeur dans la case à côté ; les deux restent synchronisés</td></tr>
+              <tr><td>Filigrane</td><td>texte</td><td>Texte du filigrane, utilisé quand la case <strong>Filigrane</strong> est cochée</td></tr>
+              <tr><td>Filigrane / Lettres leurres / Traits parasites</td><td>cases à cocher</td><td>Activent ou désactivent chaque couche. Les trois sont <strong>désactivées par défaut</strong> ; les réglages associés sont grisés tant qu'une couche est désactivée</td></tr>
+              <tr><td>Résolution</td><td>liste</td><td>Taille de l'image : <strong>Personnalisée…</strong> (curseurs largeur et hauteur, 320–3840 px) ou un préréglage téléphone / réseaux sociaux, tablette ou ordinateur</td></tr>
+              <tr><td>Sortie</td><td>liste</td><td><strong>Animation · fragments</strong>, <strong>Animation · fragments + mouvement</strong> (par défaut, voir <a href="#animations">Animations</a>), <strong>Animation · fragments complémentaires + mouvement</strong> ou <strong>Image fixe · PNG</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+      <li>Cliquez sur <strong>Générer</strong>. Déplacer un curseur régénère l'image immédiatement (les curseurs largeur/hauteur personnalisés régénèrent l'image quand vous les relâchez ; les animations sont recalculées un instant après que vous avez fini de bouger un curseur).</li>
+      <li>Cliquez sur <strong>Autre variante</strong> pour une nouvelle disposition aléatoire.</li>
+      <li>Enregistrez le résultat avec <strong>Télécharger PNG</strong> (fichier <code>texte-brouille.png</code>) ou <strong>Copier l'image</strong>. Si votre navigateur les bloque, faites un clic droit ou un appui long sur l'image puis « Enregistrer l'image ». Les animations ont leurs propres boutons : <strong>Télécharger GIF</strong> et <strong>Télécharger la vidéo (WebM)</strong>.</li>
+    </ol>
+  </section>
+
+  <section class="panel" id="animations" aria-labelledby="h-animations">
+    <h2 id="h-animations">Animations</h2>
+    <p>Une image fixe peut être lue par n'importe quel outil qui analyse une seule image. Une animation peut répartir le texte dans le temps : chaque image prise seule ne montre presque rien, et l'œil humain assemble les images entre elles.</p>
+    <p>Choisissez l'animation dans la liste <strong>Sortie</strong> :</p>
+    <ul>
+      <li><strong>Animation · fragments</strong> : le texte brouillé est affiché, mais chaque image ne montre qu'une partie de chaque lettre, tirée au hasard. L'œil comble les trous pendant la lecture de l'animation. Un outil qui fait la moyenne des images reconstitue cependant le texte.</li>
+      <li><strong>Animation · fragments + mouvement</strong> : les mêmes fragments, mais chaque mot se déplace en plus sur sa propre petite ellipse, avec son propre point de départ et son propre sens, un tour complet par boucle. L'œil suit les mots et assemble toujours les fragments, alors que la moyenne des images ne donne que des taches floues à la place des mots. Comme chaque mot bouge différemment, aligner toutes les images avec un seul décalage ne marche pas non plus. Une marge est réservée autour du texte pour le mouvement : le texte peut donc être un peu plus petit.</li>
+      <li><strong>Animation · fragments complémentaires + mouvement</strong> : conçue contre les modèles d'IA, qui n'analysent souvent qu'une seule image (en général la première). La première image ne montre aucun texte. Dans les autres images, les cellules de chaque mot sont réparties en groupes fixes affichés à tour de rôle : chaque image ne contient que 1/2, 1/3 ou 1/4 de chaque lettre, tandis que quelques images successives la montrent en entier. Les groupes se déplacent avec leur mot, si bien que la couverture reste complète pendant le mouvement. Le curseur <strong>Groupes</strong> (2–8, 3 par défaut) fixe le nombre de groupes : chaque image montre 1/Groupes de chaque lettre. Avec <strong>Découpe aléatoire</strong> cochée (par défaut), un nouveau motif de découpe est tiré au début de chaque cycle : une lettre n'est pas découpée de la même façon d'un cycle à l'autre ; à l'intérieur d'un cycle, les groupes couvrent toujours la lettre entière.</li>
+    </ul>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Réglage</th><th scope="col">Plage</th><th scope="col">Défaut</th><th scope="col">Effet</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Images</td><td class="nowrap">8–60</td><td>24</td><td>Nombre d'images de la boucle</td></tr>
+          <tr><td>Images / s</td><td class="nowrap">4–30</td><td>30</td><td>Vitesse de lecture. Ne modifie que la lecture et les exports ; les images ne sont pas recalculées</td></tr>
+          <tr><td>Fragments</td><td class="nowrap">10–100 %</td><td class="nowrap">50 %</td><td>Part de chaque lettre affichée dans une image. Une valeur plus basse cache davantage chaque lettre mais rend le texte plus difficile à lire ; vers 30 %, il devient illisible. Non utilisé par le mode complémentaire</td></tr>
+          <tr><td>Groupes</td><td class="nowrap">2–8</td><td>3</td><td>Mode complémentaire uniquement : nombre de groupes ; chaque image montre 1/Groupes de chaque lettre</td></tr>
+          <tr><td>Découpe aléatoire</td><td>case à cocher</td><td>activée</td><td>Mode complémentaire uniquement : tire un nouveau motif de découpe à chaque cycle</td></tr>
+          <tr><td>Perturbations</td><td class="nowrap">0–10</td><td>4</td><td>Force des perturbations dynamiques (voir ci-dessous)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Les <strong>perturbations dynamiques</strong> sont des éléments qui changent à chaque image. Dans une image isolée, elles ressemblent à une partie du message, mais elles ne durent pas : l'œil les écarte, alors qu'un outil qui analyse une seule image ne le peut pas.</p>
+    <ul>
+      <li>Des lettres leurres foncées, de la taille du texte, affichées chacune sur une seule image (leur nombre et leur opacité augmentent avec le réglage), quand <strong>Lettres leurres</strong> est coché ; les traits qui barrent le texte sont redessinés à de nouvelles positions à chaque image, quand <strong>Traits parasites</strong> est coché ; le bruit de pixels est renouvelé à chaque image.</li>
+    </ul>
+    <p>Il ne s'agit pas de perturbations adversariales au sens de l'apprentissage automatique. Celles-ci sont calculées contre un modèle précis, trompent rarement les autres modèles et résistent mal à la recompression des réseaux sociaux.</p>
+
+    <h3>Exports</h3>
+    <ul>
+      <li><strong>GIF</strong> : fonctionne dans tous les navigateurs et est encodé directement dans la page (palette de 252 couleurs, boucle infinie). Les animations bruitées donnent des fichiers lourds : baissez au besoin le Bruit, le nombre d'images ou la résolution.</li>
+      <li><strong>Vidéo</strong> : enregistrée en temps réel avec le <code>MediaRecorder</code> du navigateur (WebM VP9 ou VP8 ; MP4 sous Safari), bouclée pour durer au moins 6 secondes, avec un débit élevé pour ne pas étaler le bruit et les fragments. Gardez l'onglet visible pendant l'enregistrement. Bien plus légère que le GIF.</li>
+      <li>Les animations sont limitées à 1080 px sur leur plus grand côté pour limiter la mémoire utilisée et le poids des fichiers ; la ligne d'état indique quand la taille a été réduite.</li>
+    </ul>
+
+    <h3>Conseils pour les animations</h3>
+    <ul>
+      <li>Si le texte est difficile à lire, baissez <strong>Perturbations</strong>, montez <strong>Fragments</strong> (jusqu'à 100 %) ou augmentez la <strong>Taille</strong>.</li>
+      <li>Les animations qui scintillent peuvent être inconfortables, et présentent un risque pour les personnes atteintes d'épilepsie photosensible. Évitez les cadences très élevées avec des perturbations fortes.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="reglages-conseilles" aria-labelledby="h-reglages-conseilles">
+    <h2 id="h-reglages-conseilles">Réglages conseillés</h2>
+    <ul>
+      <li><strong>Par défaut (5 / 5 / 4)</strong> : bon équilibre entre lisibilité et protection.</li>
+      <li><strong>Renforcé (7–8 / 6 / 7)</strong> : plus difficile pour un OCR. Vérifiez que le texte reste facile à lire pour vous.</li>
+      <li>Les textes courts et les grandes tailles restent plus lisibles quand la déformation est forte.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="grandes-polices" aria-labelledby="h-grandes-polices">
+    <h2 id="h-grandes-polices">Conseils pour les grandes polices</h2>
+    <p>La rotation et l'inclinaison sont des angles : elles suivent la taille des lettres. L'ondulation, le décalage vertical et l'épaisseur des traits sont fixés en pixels : ils perturbent donc proportionnellement moins les grosses lettres.</p>
+    <ul>
+      <li>Avec une grande taille, montez <strong>Déformation</strong> (7–9) et <strong>Bruit</strong> (6–8) pour garder le même niveau de protection.</li>
+      <li>Les lettres leurres et le filigrane grossissent avec le texte. Montez <strong>Leurres</strong> pour garder un fond bien couvert, puis vérifiez que le texte reste lisible.</li>
+      <li>Si le texte ne tient pas, la taille est réduite automatiquement et la ligne d'état l'indique. Raccourcissez le texte ou choisissez une résolution plus grande plutôt que d'augmenter encore la taille.</li>
+      <li>Pour un texte plus gros à l'écran, une résolution plus grande avec une taille modérée donne souvent un meilleur résultat qu'une taille énorme sur une petite image.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="resistance-ocr" aria-labelledby="h-resistance-ocr">
+    <h2 id="h-resistance-ocr">Maximiser la résistance à l'OCR</h2>
+    <ul>
+      <li>Cochez <strong>Filigrane</strong>, <strong>Lettres leurres</strong> et <strong>Traits parasites</strong> (désactivés par défaut), partez de <strong>Déformation 7–9 / Bruit 6–8 / Leurres 6–8</strong>, puis baissez ce qui gêne la lecture.</li>
+      <li>Activez le filigrane. Du texte supplémentaire réparti sur l'image donne à l'OCR davantage de faux caractères à traiter.</li>
+      <li>Préférez les textes courts. Découpez un long message en plusieurs images : l'OCR a moins de contexte pour deviner les mots manquants.</li>
+      <li>Cliquez plusieurs fois sur <strong>Autre variante</strong> et testez chaque image avec une application d'OCR (par exemple Google Lens ou la reconnaissance de texte de votre téléphone). Gardez celle qu'elle lit le moins bien.</li>
+      <li>Là où les animations sont acceptées, préférez <strong>fragments complémentaires + mouvement</strong> : la première image ne montre pas de texte, chaque autre image ne montre qu'une partie de chaque lettre, et la moyenne des images ne les reconstitue pas. Montez <strong>Groupes</strong> (4 ou 5), en gardant <strong>Découpe aléatoire</strong> cochée, pour en montrer moins, et de façon moins prévisible, dans chaque image, tant que vous arrivez encore à lire l'animation.</li>
+      <li>Ne recopiez pas le texte dans la légende, le texte alternatif ou les hashtags : l'image perdrait tout son intérêt.</li>
+      <li>Gardez en tête les <a href="#limites">limites ci-dessous</a> : les modèles d'IA de vision récents lisent du texte qui met en échec les OCR classiques.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="image-produite" aria-labelledby="h-image-produite">
+    <h2 id="h-image-produite">Image produite</h2>
+    <ul>
+      <li>Taille : choisie dans la liste <strong>Résolution</strong> (par défaut 1080×1350, format 4:5 des fils de réseaux sociaux). Les animations sont limitées à 1080 px sur leur plus grand côté.</li>
+      <li>Le bloc de texte est centré horizontalement et verticalement.</li>
+      <li>Format : PNG pour les images fixes, GIF ou vidéo (WebM, ou MP4 sous Safari) pour les animations.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="limites" aria-labelledby="h-limites">
+    <h2 id="h-limites">Limites</h2>
+    <ul>
+      <li>L'outil rend les OCR classiques beaucoup moins fiables, mais les modèles d'IA de vision récents lisent souvent du texte assez déformé. Rien ne garantit que le contenu passera inaperçu.</li>
+      <li>Les plateformes décident de la visibilité à partir de nombreux autres signaux (signalements, comportement du compte, interactions, légendes, hashtags). Une image seule n'empêche pas un shadowban.</li>
+      <li>Les images très déformées sont plus difficiles à lire pour les personnes malvoyantes et invisibles pour les lecteurs d'écran. Pensez à ajouter une description quand le contexte le permet.</li>
+      <li>Les polices utilisées (Georgia, Courier New, Verdana, etc.) sont des polices système ; le rendu peut varier légèrement d'un système à l'autre.</li>
+      <li>Les animations protègent contre les outils qui analysent une image à la fois. Un outil qui combine plusieurs images peut retrouver le texte : la moyenne des images reconstitue les lettres de l'animation <strong>fragments</strong>. L'animation <strong>fragments + mouvement</strong> résiste à la simple moyenne, mais un outil qui suivrait chaque mot séparément pour le réaligner avant d'empiler les images pourrait encore reconstituer le texte. Il en va de même pour le mode complémentaire, même si chacune de ses images contient moins de chaque lettre.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="fonctionnement" aria-labelledby="h-fonctionnement">
+    <h2 id="h-fonctionnement">Fonctionnement</h2>
+    <p>La page dessine sur un <code>&lt;canvas&gt;</code> HTML :</p>
+    <ol>
+      <li>Un fond teinté avec des dégradés de couleur aléatoires.</li>
+      <li>Des caractères leurres à faible opacité.</li>
+      <li>Le texte, caractère par caractère, avec des transformations aléatoires.</li>
+      <li>Un déplacement des pixels en sinusoïde sur toute l'image.</li>
+      <li>Des courbes de Bézier et des arcs sur les lettres.</li>
+      <li>Un filigrane incliné et répété.</li>
+      <li>Du bruit pixel par pixel et des points.</li>
+    </ol>
+    <p>Le résultat est converti en PNG avec <code>canvas.toDataURL()</code>. Un générateur pseudo-aléatoire à graine (mulberry32) pilote tout l'aléatoire.</p>
+    <p>Les animations réutilisent les mêmes couches :</p>
+    <ul>
+      <li>Le fond et le texte sont dessinés sur des couches séparées avec la même ondulation, puis chaque image assemble le fond, un sous-ensemble aléatoire de petites cellules de la couche de texte, les leurres d'une seule image, les traits, arcs et filigrane, et un bruit de pixels neuf.</li>
+      <li>Avec le mouvement, la couche de texte est redessinée à chaque image, chaque mot étant décalé le long de son ellipse. Le générateur aléatoire est rejoué depuis le même point à chaque image : chaque caractère garde sa police, sa couleur et son inclinaison pendant qu'il bouge.</li>
+      <li>En mode complémentaire, chaque mot est dessiné seul une fois. À chaque image, le masque du groupe courant est appliqué dans les coordonnées du mot au repos, puis le morceau est déplacé le long de l'ellipse du mot et passé dans l'ondulation. Avec la découpe aléatoire, de nouveaux masques sont tirés au début de chaque cycle.</li>
+      <li>L'encodeur GIF (compression LZW, palette de couleurs fixe) est inclus dans la page ; la vidéo utilise <code>canvas.captureStream()</code> et <code>MediaRecorder</code>.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="personnalisation" aria-labelledby="h-personnalisation">
+    <h2 id="h-personnalisation">Personnalisation</h2>
+    <p>Dans le bloc <code>&lt;script&gt;</code>, vous pouvez modifier :</p>
+    <ul>
+      <li><code>FONTS</code> : la liste des polices tirées pour chaque caractère.</li>
+      <li><code>DECOYS</code> : les caractères utilisés comme leurres.</li>
+      <li>Les <code>&lt;option&gt;</code> de la liste <code>res</code> : les résolutions prédéfinies (valeur <code>LARGEURxHAUTEUR</code>).</li>
+      <li><code>BASE_SIDE</code> : le petit côté, en pixels, auquel se rapporte la valeur <strong>Taille</strong> (par défaut <code>1080</code>). Sur une image plus grande, la police est agrandie en proportion.</li>
+      <li><code>ANIM_MAX_SIDE</code> : le plus grand côté des animations (par défaut <code>1080</code>).</li>
+      <li><code>MOTION_RADIUS_RATIO</code> : le rayon horizontal des ellipses des mots dans l'animation fragments + mouvement, en proportion de la taille de police (par défaut <code>0.35</code> ; le rayon vertical en vaut la moitié).</li>
+      <li><code>VIDEO_BITRATE</code> et <code>VIDEO_MIN_SECONDS</code> : le débit de la vidéo (par défaut 12 Mbit/s) et sa durée minimale (par défaut 6 s).</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="licence" aria-labelledby="h-licence">
+    <h2 id="h-licence">Licence</h2>
+    <p>Voir le fichier <a href="https://github.com/botelectro9/Text-Scrambler/blob/origin/LICENSE">LICENSE</a>.</p>
+  </section>
+
+  <footer>
+    Source &amp; documentation : <a href="https://github.com/botelectro9/Text-Scrambler">github.com/botelectro9/Text-Scrambler</a>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scrambled Text — Documentation</title>
+<meta name="description" content="Documentation for Scrambled Text: download, installation, usage, recommended settings, OCR resistance tips, limitations and customization.">
+<link rel="alternate" hreflang="fr" href="documentation-fr.html">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same one-column workbench as index.html — header, table of contents, then one panel per section */
+:root {
+  --bg: #eef0ea; --panel: #fbfcf8; --ink: #1d231c; --muted: #5f6a5c;
+  --line: #cfd6c8; --accent: #2f6b4f; --accent-ink: #ffffff;
+  --code-bg: rgba(29, 35, 28, 0.06);
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #151a16; --panel: #1e241f; --ink: #e6ebe2; --muted: #9aa695;
+  --line: #333d34; --accent: #7cc6a0; --accent-ink: #10231a;
+  --code-bg: rgba(230, 235, 226, 0.08); color-scheme: dark } }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+h3 { font-family: var(--display); font-weight: 500; font-size: 17px; line-height: 1.2; margin: 0; }
+p, ul, ol { margin: 0; }
+ul, ol { padding-left: 1.4em; display: grid; gap: 4px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.nav a { font: 500 14px var(--body); border-radius: 8px; padding: 6px 12px; text-decoration: none;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); transition: border-color .15s; }
+.nav a:hover { border-color: var(--accent); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel > section { display: grid; gap: 10px; min-width: 0; }
+.lbl { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.toc ol { gap: 2px; }
+.toc ol ol { margin-top: 2px; }
+code { font-family: var(--mono); font-size: 0.9em; background: var(--code-bg); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: 13px; overflow-wrap: normal; }
+blockquote { margin: 0; padding: 8px 14px; border-left: 3px solid var(--accent); background: var(--bg); border-radius: 0 8px 8px 0; color: var(--muted); }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { font-family: var(--mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg); }
+footer { font-size: 13px; color: var(--muted); }
+footer a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .nav a { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Scrambled Text — Documentation</h1>
+    <p class="lede">Turn your text into an image that a human can read but OCR struggles with.</p>
+    <nav class="nav" aria-label="Site">
+      <a href="index.html">← Home</a>
+      <a href="text-scrambler-en.html">Open the tool</a>
+      <a href="documentation-fr.html" hreflang="fr" lang="fr">Version française</a>
+    </nav>
+  </header>
+
+  <nav class="panel toc" aria-labelledby="toc-title">
+    <span class="lbl" id="toc-title">Contents</span>
+    <ol>
+      <li><a href="#download">Download</a>
+        <ol>
+          <li><a href="#get-files">How to get the files on your computer</a></li>
+        </ol>
+      </li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#usage">Usage</a></li>
+      <li><a href="#animations">Animations</a></li>
+      <li><a href="#recommended-settings">Recommended settings</a></li>
+      <li><a href="#large-fonts">Tips for large fonts</a></li>
+      <li><a href="#ocr-resistance">Maximizing OCR resistance</a></li>
+      <li><a href="#output">Output</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#customization">Customization</a></li>
+      <li><a href="#license">License</a></li>
+    </ol>
+  </nav>
+
+  <section class="panel" id="download" aria-labelledby="download-title">
+    <h2 id="download-title">Download</h2>
+    <p><strong>Repository:</strong> <a href="https://github.com/botelectro9/Text-Scrambler">https://github.com/botelectro9/Text-Scrambler</a></p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">File</th><th scope="col">Language</th><th scope="col">Direct link</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>text-scrambler-en.html</code></td><td>English</td><td><a href="https://github.com/botelectro9/Text-Scrambler/raw/origin/text-scrambler-en.html">Download</a></td></tr>
+          <tr lang="fr"><td><code>texte-brouille-fr.html</code></td><td>Français</td><td><a href="https://github.com/botelectro9/Text-Scrambler/raw/origin/texte-brouille-fr.html">Télécharger</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <blockquote>If the link opens the file as text in your browser, right-click it and choose <strong>Save link as…</strong> (make sure the name ends with <code>.html</code>).</blockquote>
+
+    <section id="get-files" aria-labelledby="get-files-title">
+      <h3 id="get-files-title">How to get the files on your computer</h3>
+
+      <p><strong>Option 1 – Download everything as a ZIP (easiest)</strong></p>
+      <ol>
+        <li>Open <a href="https://github.com/botelectro9/Text-Scrambler">https://github.com/botelectro9/Text-Scrambler</a></li>
+        <li>Click the green <strong>Code</strong> button, then <strong>Download ZIP</strong>.</li>
+        <li>Unzip the archive.</li>
+        <li>Double-click <code>text-scrambler-en.html</code> (or <code>texte-brouille-fr.html</code>) to open it in your browser.</li>
+      </ol>
+
+      <p><strong>Option 2 – Download a single file</strong></p>
+      <ol>
+        <li>In the repository, click the file name (for example <code>text-scrambler-en.html</code>).</li>
+        <li>Click the <strong>Download raw file</strong> button (down-arrow icon, top right of the file view).</li>
+        <li>Check that the saved file ends with <strong><code>.html</code></strong>. Some browsers add <code>.txt</code> (for example <code>text-scrambler-en.html.txt</code>) or save it without an extension. If so, rename it so it ends with <code>.html</code>. On Windows, turn on <strong>View → File name extensions</strong> in File Explorer to see the real extension; on macOS, use <strong>Get Info → Name &amp; Extension</strong>.</li>
+        <li>Open the file in your browser.</li>
+      </ol>
+      <blockquote>Don't use "Save page as" on the GitHub file view: it saves GitHub's page, not the tool.</blockquote>
+
+      <p><strong>Option 3 – With Git</strong></p>
+      <pre><code>git clone https://github.com/botelectro9/Text-Scrambler.git
+cd Text-Scrambler</code></pre>
+      <p>Then open one of the <code>.html</code> files in your browser.</p>
+    </section>
+  </section>
+
+  <section class="panel" id="about" aria-labelledby="about-title">
+    <h2 id="about-title">About</h2>
+    <p><strong>Scrambled Text</strong> is a single-file HTML/JavaScript page that turns a piece of text into an image. Letters are distorted and the image is covered with noise, decoy characters, strike-through lines and a watermark, so a human can still read it while automatic text recognition (OCR) has a much harder time.</p>
+  </section>
+
+  <section class="panel" id="features" aria-labelledby="features-title">
+    <h2 id="features-title">Features</h2>
+    <ul>
+      <li>Each character gets its own font, size, rotation, skew and color.</li>
+      <li>A wave distortion is applied to the whole image.</li>
+      <li>Faint decoy letters are scattered in the background.</li>
+      <li>Curved lines cross the text, and small arcs are drawn over some letters.</li>
+      <li>A repeated diagonal watermark with customizable text.</li>
+      <li>Pixel noise and colored speckles.</li>
+      <li>Choice of image resolution (presets for phone, tablet and computer, or custom), with the text centered and shrunk automatically if it does not fit.</li>
+      <li><strong>Another variant</strong> button to get a different random layout of the same text.</li>
+      <li>Export as PNG (download or copy to clipboard).</li>
+      <li><strong>Animations</strong> exported as GIF or video (WebM): fragmented letters, optionally moving so that stacking the frames does not rebuild them, with dynamic perturbations that change every frame.</li>
+      <li>Light and dark theme, works on desktop and mobile.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="installation" aria-labelledby="installation-title">
+    <h2 id="installation-title">Installation</h2>
+    <p>No installation, build step or server needed. Everything runs in the browser.</p>
+    <ol>
+      <li>Download <code>text-scrambler-en.html</code> (see <a href="#download">Download</a>).</li>
+      <li>Open it in a modern browser (Chrome, Firefox, Safari, Edge).</li>
+    </ol>
+    <p>You can also put the file on any static web host (GitHub Pages, Netlify, your own server).</p>
+  </section>
+
+  <section class="panel" id="usage" aria-labelledby="usage-title">
+    <h2 id="usage-title">Usage</h2>
+    <ol>
+      <li>Type or paste your text in the <strong>Your text</strong> field. Line breaks are kept; long lines wrap automatically.</li>
+      <li>Adjust the settings:
+        <div class="table-scroll" style="margin-top: 8px;">
+          <table>
+            <thead>
+              <tr><th scope="col">Control</th><th scope="col">Range</th><th scope="col">Effect</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Distortion</td><td>0–10</td><td>Rotation, skew, size variation, baseline jitter and wave strength</td></tr>
+              <tr><td>Noise</td><td>0–10</td><td>Pixel noise and speckles, and the number of crossing lines and arcs when <strong>Crossing lines</strong> is checked</td></tr>
+              <tr><td>Decoys</td><td>0–10</td><td>Density of decoy letters in the background, when <strong>Decoy letters</strong> is checked</td></tr>
+              <tr><td>Size</td><td>28–300&nbsp;px</td><td>Base font size (default 165, sized for the default 1080×1350 resolution). Use the slider or type the value in the box next to it; both stay in sync</td></tr>
+              <tr><td>Watermark</td><td>text</td><td>Watermark text, used when the <strong>Watermark</strong> box is checked</td></tr>
+              <tr><td>Watermark / Decoy letters / Crossing lines</td><td>checkboxes</td><td>Turn each layer on or off. All three are <strong>off by default</strong>; the related inputs are greyed out while a layer is off</td></tr>
+              <tr><td>Resolution</td><td>list</td><td>Image size: <strong>Custom…</strong> (width and height sliders, 320–3840&nbsp;px) or a preset for phone / social networks, tablet or computer</td></tr>
+              <tr><td>Output</td><td>list</td><td><strong>Animation · fragments</strong>, <strong>Animation · fragments + motion</strong> (default, see <a href="#animations">Animations</a>), <strong>Animation · complementary fragments + motion</strong> or <strong>Still image · PNG</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+      <li>Click <strong>Generate</strong>. Moving a slider regenerates the image immediately (the custom width/height sliders regenerate when you release them; animations are rebuilt a moment after you stop moving a slider).</li>
+      <li>Click <strong>Another variant</strong> for a new random layout.</li>
+      <li>Save the result with <strong>Download PNG</strong> (saved as <code>scrambled-text.png</code>) or <strong>Copy image</strong>. If your browser blocks these, right-click or long-press the image and choose "Save image". Animations have their own buttons: <strong>Download GIF</strong> and <strong>Download video (WebM)</strong>.</li>
+    </ol>
+  </section>
+
+  <section class="panel" id="animations" aria-labelledby="animations-title">
+    <h2 id="animations-title">Animations</h2>
+    <p>A still image can be read by anything that looks at one picture. An animation can spread the text over time: each frame on its own shows little or nothing, and the human eye puts the frames together.</p>
+    <p>Choose the animation in the <strong>Output</strong> list:</p>
+    <ul>
+      <li><strong>Animation · fragments</strong>: the scrambled text is shown, but each frame shows only part of every letter, picked at random. The eye fills in the gaps while the animation plays. A tool that averages the frames rebuilds the text, though.</li>
+      <li><strong>Animation · fragments + motion</strong>: the same fragments, but every word also moves along its own small ellipse, with its own starting point and direction, one full turn per loop. The eye follows the words and still puts the fragments together, while averaging the frames only gives blurred smudges where the words were. Because each word moves differently, aligning all the frames with a single shift does not work either. Some room is kept around the text for the motion, so the text can be slightly smaller.</li>
+      <li><strong>Animation · complementary fragments + motion</strong>: built against AI models, which often look at a single frame (usually the first one). The first frame shows no text at all. In the other frames, the cells of every word are split into fixed groups shown in turn, so each frame holds only 1/2, 1/3 or 1/4 of every letter, while a few consecutive frames together show all of it. The groups move with their word, so the coverage holds during the motion. The <strong>Groups</strong> slider (2–8, default 3) sets how many groups there are: each frame shows 1/Groups of every letter. With <strong>Random cuts</strong> checked (the default), a new cutting pattern is drawn at the start of every cycle, so a letter is not cut the same way from one cycle to the next; within a cycle, the groups still cover the whole letter.</li>
+    </ul>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Control</th><th scope="col">Range</th><th scope="col">Default</th><th scope="col">Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Frames</td><td>8–60</td><td>24</td><td>Number of frames in the loop</td></tr>
+          <tr><td>Frames / s</td><td>4–30</td><td>30</td><td>Playback speed. Only changes playback and exports; the frames are not regenerated</td></tr>
+          <tr><td>Fragments</td><td>10–100&nbsp;%</td><td>50&nbsp;%</td><td>Share of each letter shown in a frame. Lower values hide more of each letter but make the text harder to read; around 30&nbsp;% it becomes unreadable. Not used by the complementary mode</td></tr>
+          <tr><td>Groups</td><td>2–8</td><td>3</td><td>Complementary mode only: number of groups; each frame shows 1/Groups of every letter</td></tr>
+          <tr><td>Random cuts</td><td>checkbox</td><td>on</td><td>Complementary mode only: draws a new cutting pattern at every cycle</td></tr>
+          <tr><td>Perturbations</td><td>0–10</td><td>4</td><td>Strength of the dynamic perturbations (see below)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Dynamic perturbations</strong> are elements that change every frame. In a single frame they look like part of the message, but they do not last, so the eye discards them while a tool analysing one frame does not:</p>
+    <ul>
+      <li>Text-like decoy letters, dark and as big as the text, each shown for a single frame (their number and opacity grow with the setting), when <strong>Decoy letters</strong> is checked; the crossing lines are redrawn at new positions every frame, when <strong>Crossing lines</strong> is checked; pixel noise is new in every frame.</li>
+    </ul>
+    <p>These are not adversarial perturbations in the machine-learning sense. Those are computed against one specific model, rarely fool other models, and usually do not survive the compression applied by social networks.</p>
+
+    <section aria-labelledby="animations-exports-title">
+      <h3 id="animations-exports-title">Exports</h3>
+      <ul>
+        <li><strong>GIF</strong>: works in every browser and is encoded directly in the page (252-colour palette, infinite loop). Noisy animations make large files: lower Noise, the number of frames or the resolution if needed.</li>
+        <li><strong>Video</strong>: recorded in real time with the browser's <code>MediaRecorder</code> (WebM VP9 or VP8; MP4 on Safari), looped to last at least 6 seconds, at a high bitrate so the noise and fragments are not smeared. Keep the tab visible while it records. Much lighter than the GIF.</li>
+        <li>Animations are limited to 1080&nbsp;px on their longest side to keep memory use and file sizes reasonable; the status line says when the size was reduced.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="animations-tips-title">
+      <h3 id="animations-tips-title">Tips for animations</h3>
+      <ul>
+        <li>If the text is hard to read, lower <strong>Perturbations</strong>, raise <strong>Fragments</strong> (up to 100&nbsp;%) or raise <strong>Size</strong>.</li>        <li>Flickering animations can be uncomfortable, and are a risk for people with photosensitive epilepsy. Avoid very high frame rates with strong perturbations.</li>
+      </ul>
+    </section>
+  </section>
+
+  <section class="panel" id="recommended-settings" aria-labelledby="recommended-settings-title">
+    <h2 id="recommended-settings-title">Recommended settings</h2>
+    <ul>
+      <li><strong>Default (5 / 5 / 4)</strong>: good balance between readability and protection.</li>
+      <li><strong>Stronger (7–8 / 6 / 7)</strong>: harder for OCR. Check that the text is still easy for you to read.</li>
+      <li>Shorter texts and larger sizes stay more readable when distortion is high.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="large-fonts" aria-labelledby="large-fonts-title">
+    <h2 id="large-fonts-title">Tips for large fonts</h2>
+    <p>Rotation and skew are angles, so they scale with the letters. The wave, the vertical jitter and the thickness of the crossing lines are fixed in pixels, so they disturb big letters proportionally less.</p>
+    <ul>
+      <li>With a large size, raise <strong>Distortion</strong> (7–9) and <strong>Noise</strong> (6–8) to keep the same level of protection.</li>
+      <li>Decoy letters and the watermark grow with the text. Raise <strong>Decoys</strong> to keep the background covered, then check that the text stays readable.</li>
+      <li>If the text does not fit, the size is reduced automatically and the status line says so. Shorten the text or pick a larger resolution instead of pushing the size further.</li>
+      <li>To get bigger text on screen, a larger resolution with a moderate size often works better than a huge size on a small image.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="ocr-resistance" aria-labelledby="ocr-resistance-title">
+    <h2 id="ocr-resistance-title">Maximizing OCR resistance</h2>
+    <ul>
+      <li>Check <strong>Watermark</strong>, <strong>Decoy letters</strong> and <strong>Crossing lines</strong> (all off by default), start from <strong>Distortion 7–9 / Noise 6–8 / Decoys 6–8</strong>, then lower whatever hurts readability.</li>
+      <li>Enable the watermark. Extra text spread over the image gives OCR more false characters to deal with.</li>
+      <li>Prefer short texts. Split a long message into several images: OCR has less context to guess the missing words.</li>
+      <li>Click <strong>Another variant</strong> several times and test each image with an OCR app (for example Google Lens or your phone's text recognition). Keep the one it reads worst.</li>
+      <li>Where animations are accepted, prefer <strong>complementary fragments + motion</strong>: the first frame shows no text, every other frame shows only part of each letter, and averaging the frames does not rebuild them. Raise <strong>Groups</strong> (4 or 5), keeping <strong>Random cuts</strong> checked, to show less, and less predictably, in each frame, as long as you can still read the animation.</li>
+      <li>Do not repeat the text in the caption, alt text or hashtags: that would make the image pointless for this purpose.</li>
+      <li>Remember the limits below: recent AI vision models can read text that defeats classic OCR.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="output" aria-labelledby="output-title">
+    <h2 id="output-title">Output</h2>
+    <ul>
+      <li>Size: chosen in the <strong>Resolution</strong> list (default 1080×1350, a 4:5 social-network feed format). Animations are limited to 1080&nbsp;px on their longest side.</li>
+      <li>The text block is centered horizontally and vertically.</li>
+      <li>Format: PNG for still images, GIF or video (WebM, or MP4 on Safari) for animations.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="limitations" aria-labelledby="limitations-title">
+    <h2 id="limitations-title">Limitations</h2>
+    <ul>
+      <li>This makes classic OCR much less reliable, but recent AI vision models can often read fairly distorted text. There is no guarantee the content will go undetected.</li>
+      <li>Platforms decide on visibility using many other signals (reports, account behavior, engagement, captions, hashtags). An image alone does not prevent a shadowban.</li>
+      <li>Heavily distorted images are harder to read for people with visual impairments and are invisible to screen readers. Consider adding a description when the context allows it.</li>
+      <li>Fonts used (Georgia, Courier New, Verdana, etc.) are system fonts; the rendering may vary slightly between operating systems.</li>
+      <li>Animations protect against tools that look at one frame at a time. A tool that combines several frames can recover the text: averaging the frames rebuilds the letters of the <strong>fragments</strong> animation. The <strong>fragments + motion</strong> animation resists plain averaging, but a tool that tracks each word separately and realigns it before stacking could still rebuild the text. The same goes for the complementary mode, although each of its frames holds less of every letter.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="how-it-works" aria-labelledby="how-it-works-title">
+    <h2 id="how-it-works-title">How it works</h2>
+    <p>The page draws on an HTML <code>&lt;canvas&gt;</code>:</p>
+    <ol>
+      <li>A tinted background with random color gradients.</li>
+      <li>Decoy characters at low opacity.</li>
+      <li>The text, character by character, with random transforms.</li>
+      <li>A sine-wave pixel displacement over the whole image.</li>
+      <li>Crossing Bézier curves and arcs over glyphs.</li>
+      <li>A rotated, repeated watermark.</li>
+      <li>Per-pixel noise and speckles.</li>
+    </ol>
+    <p>The result is converted to a PNG with <code>canvas.toDataURL()</code>. A seeded pseudo-random generator (mulberry32) drives all the randomness.</p>
+    <p>Animations reuse the same layers:</p>
+    <ul>
+      <li>The background and the text are drawn on separate layers with the same wave, then each frame combines the background, a random subset of small cells of the text layer, the single-frame decoys, the lines, arcs and watermark, and fresh pixel noise.</li>
+      <li>With motion, the text layer is redrawn every frame with each word shifted along its ellipse. The random generator is replayed from the same point every frame, so each glyph keeps its font, colour and tilt while it moves.</li>
+      <li>In the complementary mode, each word is drawn alone once. In every frame, the mask of the current group is applied in the word's resting coordinates, then the piece is moved along the word's ellipse and passed through the wave. With random cuts, new masks are drawn at the start of every cycle.</li>
+      <li>The GIF encoder (LZW compression, fixed colour palette) is included in the page; the video uses <code>canvas.captureStream()</code> and <code>MediaRecorder</code>.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="customization" aria-labelledby="customization-title">
+    <h2 id="customization-title">Customization</h2>
+    <p>Inside the <code>&lt;script&gt;</code> block you can edit:</p>
+    <ul>
+      <li><code>FONTS</code>: the list of fonts picked for each character.</li>
+      <li><code>DECOYS</code>: the characters used as background decoys.</li>
+      <li>The <code>&lt;option&gt;</code> entries of the <code>res</code> list: the preset resolutions (value <code>WIDTHxHEIGHT</code>).</li>
+      <li><code>BASE_SIDE</code>: the short side, in pixels, that the <strong>Size</strong> value refers to (default <code>1080</code>). On larger images the font is scaled up in proportion.</li>
+      <li><code>ANIM_MAX_SIDE</code>: the longest side of animations (default <code>1080</code>).</li>
+      <li><code>MOTION_RADIUS_RATIO</code>: the horizontal radius of the word orbits in the fragments + motion animation, as a share of the font size (default <code>0.35</code>; the vertical radius is half of it).</li>
+      <li><code>VIDEO_BITRATE</code> and <code>VIDEO_MIN_SECONDS</code>: the video bitrate (default 12 Mbit/s) and minimum duration (default 6 s).</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="license" aria-labelledby="license-title">
+    <h2 id="license-title">License</h2>
+    <p>See the <a href="https://github.com/botelectro9/Text-Scrambler/blob/origin/LICENSE">LICENSE</a> file.</p>
+  </section>
+
+  <footer>
+    Source &amp; documentation: <a href="https://github.com/botelectro9/Text-Scrambler">github.com/botelectro9/Text-Scrambler</a>
+  </footer>
+</div>
+</body>
+</html>

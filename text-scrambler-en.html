@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Scrambled Text</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column workbench — controls on top, generated image as the hero below */
+:root {
+  --bg: #eef0ea; --panel: #fbfcf8; --ink: #1d231c; --muted: #5f6a5c;
+  --line: #cfd6c8; --accent: #2f6b4f; --accent-ink: #ffffff;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151a16; --panel: #1e241f; --ink: #e6ebe2; --muted: #9aa695;
+  --line: #333d34; --accent: #7cc6a0; --accent-ink: #10231a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151a16; --panel: #1e241f; --ink: #e6ebe2; --muted: #9aa695;
+  --line: #333d34; --accent: #7cc6a0; --accent-ink: #10231a; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 16px; }
+label, .lbl { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+textarea { width: 100%; box-sizing: border-box; min-height: 96px; resize: vertical; font: inherit; font-size: 16px;
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+textarea:focus-visible, input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.field { display: grid; gap: 6px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.ctrl { display: grid; gap: 4px; }
+.ctrl .row { display: flex; justify-content: space-between; gap: 8px; }
+.ctrl output { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.checks { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.check { display: inline-flex; align-items: center; gap: 7px; font: 14px var(--body); text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
+input[type=checkbox] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+input:disabled { opacity: 0.45; }
+input[type=text] { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+input[type=number] { width: 5.5em; font: 12px var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; text-align: right; }
+select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; width: 100%; cursor: pointer; }
+[hidden] { display: none !important; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+button { font: 500 14px var(--body); border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.stage { display: grid; gap: 8px; }
+.stage img, .stage canvas { display: block; max-width: 100%; max-height: 80vh; width: auto; height: auto; margin-inline: auto; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+.status { font-family: var(--mono); font-size: 12px; color: var(--accent); min-height: 1.2em; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Scrambled Text</h1>
+    <p class="lede">Type your text: it is converted into an image with distorted letters, noise, stray lines and a watermark. Readable for a human, much harder to read for OCR.</p>
+  </header>
+
+  <section class="panel">
+    <div class="field">
+      <label for="txt">Your text</label>
+      <textarea id="txt">Meet on Saturday at 2 pm in front of the town hall. Pass it on!</textarea>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><div class="row"><span class="lbl">Distortion</span><output id="oDist"></output></div><input id="dist" type="range" min="0" max="10" value="5" aria-label="Distortion"></div>
+      <div class="ctrl"><div class="row"><span class="lbl">Noise</span><output id="oNoise"></output></div><input id="noise" type="range" min="0" max="10" value="5" aria-label="Noise"></div>
+      <div class="ctrl"><div class="row"><span class="lbl">Decoys</span><output id="oDecoy"></output></div><input id="decoy" type="range" min="0" max="10" value="4" aria-label="Decoy letters"></div>
+      <div class="ctrl"><div class="row"><label class="lbl" for="sizeNum">Size (px)</label><input id="sizeNum" type="number" min="28" max="300" step="1" value="165" inputmode="numeric"></div><input id="size" type="range" min="28" max="300" value="165" aria-label="Text size"></div>
+      <div class="ctrl"><label for="wm">Watermark</label><input id="wm" type="text" value="✶ read by a human ✶"></div>
+      <div class="ctrl"><label for="res">Resolution</label>
+        <select id="res">
+          <option value="custom">Custom…</option>
+          <optgroup label="Phone · social networks">
+            <option value="1080x1350" selected>Feed 4:5 · 1080×1350</option>
+            <option value="1080x1920">Story / Reel 9:16 · 1080×1920</option>
+            <option value="1080x1080">Square 1:1 · 1080×1080</option>
+          </optgroup>
+          <optgroup label="Tablet">
+            <option value="1536x2048">Portrait 3:4 · 1536×2048</option>
+            <option value="2048x1536">Landscape 4:3 · 2048×1536</option>
+          </optgroup>
+          <optgroup label="Computer">
+            <option value="1920x1080">Full HD 16:9 · 1920×1080</option>
+            <option value="2560x1440">QHD 16:9 · 2560×1440</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="ctrl" data-custom hidden><div class="row"><span class="lbl">Width</span><output id="oResW"></output></div><input id="resW" type="range" min="320" max="3840" step="10" value="1080" aria-label="Image width"></div>
+      <div class="ctrl" data-custom hidden><div class="row"><span class="lbl">Height</span><output id="oResH"></output></div><input id="resH" type="range" min="320" max="3840" step="10" value="1350" aria-label="Image height"></div>
+      <div class="ctrl"><label for="mode">Output</label>
+        <select id="mode">
+          <option value="static">Still image · PNG</option>
+          <option value="fragments">Animation · fragments</option>
+          <option value="fragments-motion" selected>Animation · fragments + motion</option>
+          <option value="complementary">Animation · complementary fragments + motion</option>
+        </select>
+      </div>
+      <div class="ctrl" data-anim hidden><div class="row"><span class="lbl">Frames</span><output id="oFrames"></output></div><input id="frames" type="range" min="8" max="60" value="24" aria-label="Number of frames"></div>
+      <div class="ctrl" data-anim hidden><div class="row"><span class="lbl">Frames / s</span><output id="oFps"></output></div><input id="fps" type="range" min="4" max="30" value="30" aria-label="Frames per second"></div>
+      <div class="ctrl" data-fragments hidden><div class="row"><span class="lbl">Fragments</span><output id="oFrag"></output></div><input id="frag" type="range" min="10" max="100" step="5" value="50" aria-label="Share of each letter visible per frame"></div>
+      <div class="ctrl" data-complementary hidden><div class="row"><span class="lbl">Groups</span><output id="oGroups"></output></div><input id="groups" type="range" min="2" max="8" value="3" aria-label="Number of complementary groups"></div>
+      <div class="ctrl" data-anim hidden><div class="row"><span class="lbl">Perturbations</span><output id="oDyn"></output></div><input id="dyn" type="range" min="0" max="10" value="4" aria-label="Dynamic perturbations"></div>
+      <div class="ctrl" data-complementary hidden><label class="check"><input type="checkbox" id="randomCuts" checked> Random cuts</label></div>
+    </div>
+    <div class="checks">
+      <label class="check"><input type="checkbox" id="wmOn"> Watermark</label>
+      <label class="check"><input type="checkbox" id="decoysOn"> Decoy letters</label>
+      <label class="check"><input type="checkbox" id="linesOn"> Crossing lines</label>
+    </div>
+    <div class="actions">
+      <button class="primary" id="gen">Generate</button>
+      <button id="again">Another variant</button>
+      <button id="dl" data-static>Download PNG</button>
+      <button id="cp" data-static>Copy image</button>
+      <button id="dlGif" data-anim hidden>Download GIF</button>
+      <button id="dlVideo" data-anim hidden>Download video (WebM)</button>
+    </div>
+    <div class="status" id="status" role="status"></div>
+  </section>
+
+  <section class="stage">
+    <img id="out" alt="Image generated from your text" data-static>
+    <canvas id="anim" data-anim hidden role="img" aria-label="Animation generated from your text"></canvas>
+    <p class="hint" data-static>If the Download button does nothing here, long-press (mobile) or right-click the image, then choose “Save image”.</p>
+    <p class="hint" data-anim hidden>Exports take a few seconds. The video is recorded in real time (about 6 s): keep this tab visible. Noisy animations make large GIF files; the video is much lighter.</p>
+  </section>
+</div>
+
+<canvas id="cv" hidden></canvas>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  // --- i18n ---
+  const FILE_BASE = 'scrambled-text';
+  const TXT = {
+    imageDone: (w, h) => `Image ${w}×${h} generated.`,
+    animDone: (w, h, n, capped) => `Animation ${w}×${h}, ${n} frames generated.` + (capped ? ' Size reduced to keep exports light.' : ''),
+    groups: n => ` Each frame shows 1/${n} of every letter; the first frame shows no text.`,
+    shrunk: s => ` Text reduced to ${s} px to fit.`,
+    rendering: 'Generating frames…',
+    dlStarted: 'Download started (otherwise, save the image directly).',
+    dlBlocked: 'Download blocked: save the image with right-click / long-press.',
+    copyNA: 'Copy not available: save the image with right-click / long-press.',
+    copied: 'Image copied.',
+    copyRefused: 'Copy refused by the browser: save the image with right-click / long-press.',
+    gifProgress: (i, n) => `Encoding GIF… frame ${i}/${n}`,
+    gifDone: kb => `GIF ready (${kb} KB).`,
+    videoProgress: s => `Recording the video in real time (about ${s} s): keep this tab visible…`,
+    videoDone: (kb, ext) => `Video ready (${ext.toUpperCase()}, ${kb} KB).`,
+    videoNA: 'This browser cannot record video. Use the GIF export.',
+    busy: 'An export is already running, please wait.',
+    exportFailed: msg => `Export failed: ${msg}`,
+  };
+  // --- end i18n ---
+
+  const FONTS = ['Georgia, serif', '"Courier New", monospace', 'Verdana, sans-serif', '"Trebuchet MS", sans-serif',
+                 '"Times New Roman", serif', 'Impact, sans-serif', '"Comic Sans MS", cursive', 'Arial Black, sans-serif'];
+  let seed = Date.now() >>> 0;
+  function rng() { seed = (seed + 0x6D2B79F5) >>> 0; let t = seed; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+  const R = (a, b) => a + rng() * (b - a);
+  const pick = a => a[Math.floor(rng() * a.length)];
+  const DECOYS = 'abcdefghijkmnpqrstuvwxyzABDEFGHKLMNPRTUVWXY23456789';
+  const BASE_SIDE = 1080;              // the Size slider is expressed for an image whose short side is 1080 px
+  const LINE_HEIGHT = 1.75, MIN_FONT = 12, FIT_STEP = 0.92;
+  const MIN_PAD = 40, PAD_RATIO = 0.06;
+  const DECOY_AREA = 4000;             // one static decoy letter per this many px² at full strength
+  const TEMPORAL_DECOY_AREA = 15000;   // one flickering decoy letter per this many px², per frame, at full strength
+  const ANIM_MAX_SIDE = 1080;          // animations are capped to keep memory use and GIF files reasonable
+  const ANIM_RENDER_DELAY = 350;       // ms of quiet before rebuilding the frames while a slider moves
+  const FRAG_CELL_RATIO = 0.12, MIN_FRAG_CELL = 3;
+  const MOTION_RADIUS_RATIO = 0.35;    // horizontal orbit radius of each word (× font size): averaging the frames smears the words
+  const VIDEO_TYPES = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'];
+  const VIDEO_BITRATE = 12e6;          // high bitrate: low bitrates smear the noise and the fragments
+  const VIDEO_MIN_SECONDS = 6;
+
+  // ───────────── Text layout ─────────────
+
+  function wrapLines(ctx, text, maxW, size) {
+    const out = [];
+    for (const para of text.split('\n')) {
+      let line = '';
+      for (const w of para.split(/\s+/).filter(Boolean)) {
+        const t = line ? line + ' ' + w : w;
+        ctx.font = `${size}px Georgia`;
+        if (ctx.measureText(t).width * 1.25 > maxW && line) { out.push(line); line = w; } else line = t;
+      }
+      out.push(line);
+    }
+    return out;
+  }
+
+  function getResolution() {
+    const v = $('res').value;
+    if (v === 'custom') return [+$('resW').value, +$('resH').value];
+    return v.split('x').map(Number);
+  }
+
+  // Shrink the font until the wrapped text block fits inside the padded image
+  function fitText(ctx, text, maxW, maxH, wanted) {
+    for (let size = Math.max(MIN_FONT, wanted); ; size = Math.max(MIN_FONT, Math.floor(size * FIT_STEP))) {
+      const lines = wrapLines(ctx, text, maxW, size);
+      ctx.font = `${size}px Georgia`;
+      const widest = Math.max(...lines.map(l => ctx.measureText(l).width * 1.25));
+      if (size === MIN_FONT || (lines.length * size * LINE_HEIGHT <= maxH && widest <= maxW)) return { size, lines };
+    }
+  }
+
+  // motionRatio keeps a margin so that moving words stay inside the image
+  function fitLayout(ctx, W, H, motionRatio = 0) {
+    const text = $('txt').value.trim() || ' ';
+    const wanted = Math.round(+$('size').value * Math.min(W, H) / BASE_SIDE);
+    const pad = Math.max(MIN_PAD, Math.round(Math.min(W, H) * PAD_RATIO)) + Math.round(wanted * motionRatio);
+    return { pad, wanted, ...fitText(ctx, text, W - pad * 2, H - pad * 2, wanted) };
+  }
+
+  // Pick font, size and advance of every glyph first, so the line width is known before drawing
+  function layoutLine(ctx, line, size, dist) {
+    const glyphs = [];
+    let width = 0;
+    for (const ch of line) {
+      const s = size * R(1 - 0.25 * dist, 1 + 0.2 * dist);
+      const font = `${rng() < 0.5 ? 'bold ' : ''}${s}px ${pick(FONTS)}`;
+      ctx.font = font;
+      const w = ctx.measureText(ch).width;
+      const adv = w * R(0.88 - 0.12 * dist, 1.02) + (ch === ' ' ? size * 0.15 : 0);
+      glyphs.push({ ch, s, font, w, adv });
+      width += adv;
+    }
+    return { glyphs, width };
+  }
+
+  // Draw the text block centred horizontally (line by line) and vertically; returns glyph boxes
+  // ([x, y, w, h, word]). offsets, when given, holds one [dx, dy] shift per word (words are numbered
+  // across lines). only, when >= 0, draws that word alone; the random values of every glyph are still
+  // drawn, so each word looks the same whether it is drawn alone or with the others.
+  function drawText(ctx, lines, size, dist, W, H, pad, offsets = null, only = -1) {
+    const lh = size * LINE_HEIGHT, boxes = [];
+    let word = 0;
+    const top = (H - lines.length * lh) / 2;
+    lines.forEach((line, i) => {
+      const { glyphs, width } = layoutLine(ctx, line, size, dist);
+      const squeeze = Math.min(1, (W - pad * 2) / (width || 1));
+      let x = (W - width * squeeze) / 2 + R(-10, 10) * dist;
+      const y = top + i * lh + lh / 2 + size * 0.35; // baseline that puts the x-height on the line centre
+      for (const g of glyphs) {
+        const [dx, dy] = offsets ? offsets[word] : [0, 0];
+        const yy = y + R(-8, 8) * dist + dy;
+        const rot = R(-0.35, 0.35) * dist, skewY = R(-0.15, 0.15) * dist, skewX = R(-0.4, 0.4) * dist;
+        const colour = `hsl(${R(0,360)},${R(40,80)}%,${R(10, 32)}%)`;
+        const outline = rng() < 0.25 * dist ? R(1, 2.2) : 0;
+        if (only < 0 || only === word) {
+          ctx.save();
+          ctx.font = g.font;
+          ctx.translate(x + dx + g.w / 2, yy);
+          ctx.rotate(rot);
+          ctx.transform(1, skewY, skewX, 1, 0, 0);
+          ctx.fillStyle = ctx.strokeStyle = colour;
+          if (outline) { ctx.lineWidth = outline; ctx.strokeText(g.ch, -g.w / 2, 0); }
+          else ctx.fillText(g.ch, -g.w / 2, 0);
+          ctx.restore();
+        }
+        if (g.ch.trim()) boxes.push([x + dx, yy - g.s * 0.7, g.w, g.s * 0.8, word]);
+        x += g.adv * squeeze;
+        if (g.ch === ' ') word++;
+      }
+      word++;
+    });
+    return boxes;
+  }
+
+  // ───────────── Image layers ─────────────
+
+  function makeCanvas(W, H) {
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    return { canvas, ctx: canvas.getContext('2d', { willReadFrequently: true }) };
+  }
+
+  // Grainy paper with gradient patches
+  function paintBackground(ctx, W, H) {
+    ctx.fillStyle = `hsl(${R(0, 360)},25%,94%)`; ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < 6; i++) {
+      const g = ctx.createRadialGradient(R(0, W), R(0, H), 0, R(0, W), R(0, H), R(200, 600));
+      g.addColorStop(0, `hsla(${R(0,360)},60%,80%,0.35)`); g.addColorStop(1, 'hsla(0,0%,100%,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  function paintDecoys(ctx, W, H, count, [sMin, sMax], [lMin, lMax], [aMin, aMax]) {
+    for (let i = 0; i < count; i++) {
+      ctx.save(); ctx.translate(R(0, W), R(0, H)); ctx.rotate(R(-1, 1));
+      ctx.font = `${R(sMin, sMax)}px ${pick(FONTS)}`;
+      ctx.fillStyle = `hsla(${R(0,360)},40%,${R(lMin, lMax)}%,${R(aMin, aMax)})`;
+      ctx.fillText(pick(DECOYS), 0, 0); ctx.restore();
+    }
+  }
+
+  // Faint letters behind the text
+  function paintStaticDecoys(ctx, W, H, size, decoy) {
+    paintDecoys(ctx, W, H, Math.floor(decoy * W * H / DECOY_AREA), [size * 0.4, size * 0.9], [45, 70], [0.12, 0.28]);
+  }
+
+  // Text-like letters that exist for a single frame: they look like the message in a still frame, but do not persist
+  function paintTemporalDecoys(ctx, W, H, size, dyn) {
+    paintDecoys(ctx, W, H, Math.floor(dyn * W * H / TEMPORAL_DECOY_AREA), [size * 0.8, size * 1.1], [10, 32], [0.5 * dyn, dyn]);
+  }
+
+  function makeWave(dist) {
+    if (dist <= 0) return null;
+    return { a1: 3 + 6 * dist, f1: R(0.012, 0.025), p1: R(0, 6.28), a2: 2 + 4 * dist, f2: R(0.015, 0.03), p2: R(0, 6.28) };
+  }
+
+  // Sine displacement; the same wave can be applied to several layers so they stay aligned
+  function applyWave(ctx, W, H, { a1, f1, p1, a2, f2, p2 }) {
+    const src = ctx.getImageData(0, 0, W, H), dst = ctx.createImageData(W, H);
+    const s = new Uint32Array(src.data.buffer), d = new Uint32Array(dst.data.buffer);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      let sx = Math.round(x + a2 * Math.sin(y * f2 + p2));
+      let sy = Math.round(y + a1 * Math.sin(x * f1 + p1));
+      sx = sx < 0 ? 0 : sx >= W ? W - 1 : sx; sy = sy < 0 ? 0 : sy >= H ? H - 1 : sy;
+      d[y * W + x] = s[sy * W + sx];
+    }
+    ctx.putImageData(dst, 0, 0);
+  }
+
+  // Strike-through curves crossing the letters
+  function paintStrikeLines(ctx, W, H, pad, noise) {
+    const nLines = Math.round(3 + 10 * noise);
+    for (let i = 0; i < nLines; i++) {
+      ctx.beginPath();
+      const y = R(pad * 0.5, H - pad * 0.5);
+      ctx.moveTo(0, y);
+      ctx.bezierCurveTo(W * 0.33, y + R(-80, 80), W * 0.66, y + R(-80, 80), W, y + R(-60, 60));
+      ctx.strokeStyle = `hsla(${R(0,360)},50%,${R(25,55)}%,${R(0.25, 0.55)})`;
+      ctx.lineWidth = R(1, 2.5); ctx.stroke();
+    }
+  }
+
+  // Small arcs on top of individual glyphs
+  function paintArcs(ctx, boxes, noise) {
+    for (const [gx, gy, gw, gh] of boxes) {
+      if (rng() > 0.35 * noise) continue;
+      ctx.beginPath(); ctx.arc(gx + gw / 2 + R(-5,5), gy + gh / 2, R(gw * 0.4, gw), R(0, 3), R(3, 6.28));
+      ctx.strokeStyle = `hsla(${R(0,360)},50%,40%,0.4)`; ctx.lineWidth = R(0.8, 1.6); ctx.stroke();
+    }
+  }
+
+  // Diagonal repeated watermark
+  function paintWatermark(ctx, W, H, size, wm) {
+    if (!wm) return;
+    ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(-0.42);
+    ctx.font = `600 ${Math.round(size * 0.55)}px Verdana, sans-serif`;
+    ctx.fillStyle = 'rgba(40,40,40,0.10)';
+    const step = ctx.measureText(wm + '     ').width;
+    for (let y = -H * 1.2; y < H * 1.2; y += size * 1.6)
+      for (let x = -W * 1.2 + (y / 3 % step); x < W * 1.2; x += step) ctx.fillText(wm, x, y);
+    ctx.restore();
+  }
+
+  // Pixel noise + speckles
+  function paintPixelNoise(ctx, W, H, noise) {
+    if (noise <= 0) return;
+    const img = ctx.getImageData(0, 0, W, H), p = img.data, amp = 40 * noise;
+    for (let i = 0; i < p.length; i += 4) {
+      const n = (rng() - 0.5) * amp;
+      p[i] += n + (rng() - 0.5) * amp * 0.4; p[i + 1] += n; p[i + 2] += n + (rng() - 0.5) * amp * 0.4;
+    }
+    ctx.putImageData(img, 0, 0);
+    const nDots = Math.floor(noise * W * H / 600);
+    for (let i = 0; i < nDots; i++) {
+      ctx.fillStyle = `hsla(${R(0,360)},50%,${R(20,60)}%,${R(0.3,0.7)})`;
+      ctx.fillRect(R(0, W), R(0, H), R(1, 3), R(1, 3));
+    }
+  }
+
+  // ───────────── Still image ─────────────
+
+  function readSettings() {
+    return {
+      dist: +$('dist').value / 10, noise: +$('noise').value / 10,
+      decoys: $('decoysOn').checked, decoy: $('decoysOn').checked ? +$('decoy').value / 10 : 0,
+      wm: $('wmOn').checked ? $('wm').value.trim() : '', lines: $('linesOn').checked,
+      frames: +$('frames').value, fps: +$('fps').value, frag: +$('frag').value / 100, dyn: +$('dyn').value / 10,
+      groups: +$('groups').value, randomCuts: $('randomCuts').checked,
+    };
+  }
+
+  function renderStatic() {
+    const s = readSettings(), [W, H] = getResolution();
+    const cv = $('cv'), ctx = cv.getContext('2d');
+    cv.width = W; cv.height = H;
+    const { pad, size, wanted, lines } = fitLayout(ctx, W, H);
+    paintBackground(ctx, W, H);
+    paintStaticDecoys(ctx, W, H, size, s.decoy);
+    const boxes = drawText(ctx, lines, size, s.dist, W, H, pad);
+    const wave = makeWave(s.dist);
+    if (wave) applyWave(ctx, W, H, wave);
+    if (s.lines) { paintStrikeLines(ctx, W, H, pad, s.noise); paintArcs(ctx, boxes, s.noise); }
+    paintWatermark(ctx, W, H, size, s.wm);
+    paintPixelNoise(ctx, W, H, s.noise);
+    $('out').src = cv.toDataURL('image/png');
+    setStatus(TXT.imageDone(W, H) + (size < wanted ? TXT.shrunk(size) : ''));
+  }
+
+  // ───────────── Animation: fragmented letters ─────────────
+
+  // Keep a random subset of cells of the text layer: each frame shows a different part of every letter
+  function fillFragments(dst, src, W, H, cell, keep) {
+    const cols = Math.ceil(W / cell), rows = Math.ceil(H / cell);
+    const on = new Uint8Array(cols * rows);
+    for (let i = 0; i < on.length; i++) on[i] = rng() < keep ? 1 : 0;
+    for (let y = 0; y < H; y++) {
+      const rowBase = (y / cell | 0) * cols;
+      for (let x = 0; x < W; x++) dst[y * W + x] = on[rowBase + (x / cell | 0)] ? src[y * W + x] : 0;
+    }
+  }
+
+  const countWords = lines => lines.reduce((n, line) => n + line.split(' ').length, 0);
+
+  // Each word orbits on its own ellipse, with a random phase and direction, one full turn per loop.
+  // Independent orbits also defeat aligning all the frames with a single global shift.
+  function makeOrbits(words, radius) {
+    const phase = Array.from({ length: words }, () => R(0, 2 * Math.PI));
+    const dir = Array.from({ length: words }, () => rng() < 0.5 ? -1 : 1);
+    return t => phase.map((p, i) => {
+      const a = p + dir[i] * 2 * Math.PI * t;
+      return [radius * Math.cos(a), radius * 0.5 * Math.sin(a)];
+    });
+  }
+
+  // Background and overlay shared by the animated modes; the caller may add arcs to the overlay (octx)
+  function buildBackdrop(W, H, s, motionRatio) {
+    const { canvas: base, ctx: bctx } = makeCanvas(W, H);
+    const layout = fitLayout(bctx, W, H, motionRatio);
+    paintBackground(bctx, W, H);
+    paintStaticDecoys(bctx, W, H, layout.size, s.decoy);
+    const wave = makeWave(s.dist);
+    if (wave) applyWave(bctx, W, H, wave);
+    const { canvas: overlay, ctx: octx } = makeCanvas(W, H);
+    if (s.lines && !s.dyn) paintStrikeLines(octx, W, H, layout.pad, s.noise);
+    paintWatermark(octx, W, H, layout.size, s.wm);
+    return { base, overlay, octx, wave, ...layout };
+  }
+
+  // One frame: background, text layer (if any), single-frame decoys, overlay, fresh pixel noise
+  function composeFrame(fctx, bd, textCanvas, s, W, H) {
+    fctx.drawImage(bd.base, 0, 0);
+    if (textCanvas) fctx.drawImage(textCanvas, 0, 0);
+    if (s.decoys) paintTemporalDecoys(fctx, W, H, bd.size, s.dyn);
+    fctx.drawImage(bd.overlay, 0, 0);
+    if (s.lines && s.dyn) paintStrikeLines(fctx, W, H, bd.pad, s.noise); // lines move every frame
+    paintPixelNoise(fctx, W, H, s.noise);
+    return fctx.getImageData(0, 0, W, H);
+  }
+
+  function buildFragmentFrames(W, H, s, moving) {
+    const bd = buildBackdrop(W, H, s, moving ? MOTION_RADIUS_RATIO : 0);
+    const { pad, size, lines, wave } = bd;
+    const { ctx: tctx } = makeCanvas(W, H);
+    const orbits = moving ? makeOrbits(countWords(lines), size * MOTION_RADIUS_RATIO) : null;
+    const textSeed = seed; // replayed every frame so the moving glyphs keep their font, colour and tilt
+    const boxes = drawText(tctx, lines, size, s.dist, W, H, pad, orbits && orbits(0));
+    if (wave) applyWave(tctx, W, H, wave);
+    if (!moving && s.lines) paintArcs(bd.octx, boxes, s.noise);
+
+    // Moving words are redrawn every frame, with their arcs, through the same wave
+    const drawMovingText = t => {
+      tctx.clearRect(0, 0, W, H);
+      const saved = seed;
+      seed = textSeed;
+      paintArcs(tctx, drawText(tctx, lines, size, s.dist, W, H, pad, orbits(t)), s.lines ? s.noise : 0);
+      seed = saved;
+      if (wave) applyWave(tctx, W, H, wave);
+      return new Uint32Array(tctx.getImageData(0, 0, W, H).data.buffer);
+    };
+    let textPx = new Uint32Array(tctx.getImageData(0, 0, W, H).data.buffer);
+    const { canvas: fragCv, ctx: fragCtx } = makeCanvas(W, H);
+    const fragImg = fragCtx.createImageData(W, H), fragPx = new Uint32Array(fragImg.data.buffer);
+    const cell = Math.max(MIN_FRAG_CELL, Math.round(size * FRAG_CELL_RATIO));
+    const { ctx: fctx } = makeCanvas(W, H);
+    const frames = [];
+    for (let f = 0; f < s.frames; f++) {
+      if (moving) textPx = drawMovingText(f / s.frames);
+      fillFragments(fragPx, textPx, W, H, cell, s.frag);
+      fragCtx.putImageData(fragImg, 0, 0);
+      frames.push(composeFrame(fctx, bd, fragCv, s, W, H));
+    }
+    return { frames, size: bd.size, wanted: bd.wanted };
+  }
+
+  // ───────────── Animation: complementary fragments ─────────────
+  // The cells of every word are split into k fixed groups and the frames show the groups in turn:
+  // each frame holds 1/k of every letter, and k consecutive frames together show all of it.
+  // Frame 0 shows no text: it is the thumbnail, and often the only frame an AI model looks at.
+
+  // One full-size mask per group; every cell belongs to exactly one group
+  function makeGroupMasks(W, H, cell, k) {
+    const masks = Array.from({ length: k }, () => makeCanvas(W, H));
+    const cols = Math.ceil(W / cell), rows = Math.ceil(H / cell);
+    for (let cy = 0; cy < rows; cy++) for (let cx = 0; cx < cols; cx++)
+      masks[Math.floor(rng() * k)].ctx.fillRect(cx * cell, cy * cell, cell, cell);
+    return masks.map(m => m.canvas);
+  }
+
+  // Draw every word alone, at rest, cropped around the word. The group masks are applied in the word's
+  // resting coordinates, so they travel with the word and the groups still cover every letter while it moves.
+  function makeWordSprites(lines, size, dist, W, H, pad, noise) {
+    const { canvas: scratch, ctx: sctx } = makeCanvas(W, H), textSeed = seed, sprites = [];
+    const margin = Math.ceil(size * 0.6); // room for rotated or skewed glyphs and their arcs
+    for (let w = 0; w < countWords(lines); w++) {
+      sctx.clearRect(0, 0, W, H);
+      seed = textSeed;
+      const boxes = drawText(sctx, lines, size, dist, W, H, pad, null, w).filter(b => b[4] === w);
+      if (!boxes.length) { sprites.push(null); continue; }
+      paintArcs(sctx, boxes, noise);
+      const bx = Math.max(0, Math.floor(Math.min(...boxes.map(b => b[0])) - margin));
+      const by = Math.max(0, Math.floor(Math.min(...boxes.map(b => b[1])) - margin));
+      const bw = Math.min(W, Math.ceil(Math.max(...boxes.map(b => b[0] + b[2])) + margin)) - bx;
+      const bh = Math.min(H, Math.ceil(Math.max(...boxes.map(b => b[1] + b[3])) + margin)) - by;
+      const { canvas, ctx } = makeCanvas(bw, bh);
+      ctx.drawImage(scratch, bx, by, bw, bh, 0, 0, bw, bh);
+      sprites.push({ bx, by, canvas, work: makeCanvas(bw, bh) });
+    }
+    return sprites;
+  }
+
+  // One group of a word: a copy of the word kept only where the mask is set
+  function maskSprite(sp, mask) {
+    const { canvas, ctx } = sp.work;
+    ctx.globalCompositeOperation = 'copy';
+    ctx.drawImage(sp.canvas, 0, 0);
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(mask, -sp.bx, -sp.by);
+    return canvas;
+  }
+
+  function buildComplementaryFrames(W, H, s) {
+    const bd = buildBackdrop(W, H, s, MOTION_RADIUS_RATIO);
+    const { pad, size, lines, wave } = bd, groups = s.groups;
+    const cell = Math.max(MIN_FRAG_CELL, Math.round(size * FRAG_CELL_RATIO));
+    const sprites = makeWordSprites(lines, size, s.dist, W, H, pad, s.lines ? s.noise : 0);
+    const orbits = makeOrbits(sprites.length, size * MOTION_RADIUS_RATIO);
+    const { canvas: textCv, ctx: tctx } = makeCanvas(W, H);
+    const { ctx: fctx } = makeCanvas(W, H);
+    const frames = [composeFrame(fctx, bd, null, s, W, H)];
+    let masks = null;
+    for (let f = 1; f < s.frames; f++) {
+      const g = (f - 1) % groups, offsets = orbits(f / s.frames);
+      // Random cuts: a new partition at the start of every cycle, whose groups still cover every letter
+      if (!masks || (s.randomCuts && g === 0)) masks = makeGroupMasks(W, H, cell, groups);
+      tctx.clearRect(0, 0, W, H);
+      sprites.forEach((sp, w) => { if (sp) tctx.drawImage(maskSprite(sp, masks[g]), sp.bx + offsets[w][0], sp.by + offsets[w][1]); });
+      if (wave) applyWave(tctx, W, H, wave);
+      frames.push(composeFrame(fctx, bd, textCv, s, W, H));
+    }
+    return { frames, size: bd.size, wanted: bd.wanted, groups };
+  }
+
+  // ───────────── Animation preview ─────────────
+
+  let anim = null, playTimer = 0, renderTimer = 0, renderToken = 0, busy = false;
+
+  function animationSize() {
+    const [W0, H0] = getResolution(), k = Math.min(1, ANIM_MAX_SIDE / Math.max(W0, H0));
+    return { W: Math.round(W0 * k), H: Math.round(H0 * k), capped: k < 1 };
+  }
+
+  function renderAnimation(mode) {
+    const s = readSettings(), { W, H, capped } = animationSize();
+    const built = mode === 'complementary' ? buildComplementaryFrames(W, H, s)
+                : buildFragmentFrames(W, H, s, mode === 'fragments-motion');
+    anim = { frames: built.frames, W, H, fps: s.fps };
+    startPlayback();
+    setStatus(TXT.animDone(W, H, built.frames.length, capped) + (built.groups ? TXT.groups(built.groups) : '') + (built.size < built.wanted ? TXT.shrunk(built.size) : ''));
+  }
+
+  function startPlayback() {
+    stopPlayback();
+    const c = $('anim'), ctx = c.getContext('2d');
+    c.width = anim.W; c.height = anim.H;
+    let i = 0;
+    const show = () => { ctx.putImageData(anim.frames[i], 0, 0); i = (i + 1) % anim.frames.length; };
+    show();
+    playTimer = setInterval(show, 1000 / anim.fps);
+  }
+
+  function stopPlayback() { clearInterval(playTimer); }
+
+  // ───────────── GIF export (GIF89a, fixed 6×7×6 colour cube, LZW) ─────────────
+
+  class ByteWriter {
+    constructor() { this.buf = new Uint8Array(1 << 20); this.len = 0; }
+    reserve(n) {
+      if (this.len + n <= this.buf.length) return;
+      let size = this.buf.length * 2;
+      while (size < this.len + n) size *= 2;
+      const b = new Uint8Array(size); b.set(this.buf.subarray(0, this.len)); this.buf = b;
+    }
+    byte(b) { this.reserve(1); this.buf[this.len++] = b; }
+    bytes(a) { this.reserve(a.length); this.buf.set(a, this.len); this.len += a.length; }
+    u16(v) { this.byte(v & 255); this.byte(v >> 8 & 255); }
+    str(s) { for (const c of s) this.byte(c.charCodeAt(0)); }
+    result() { return this.buf.subarray(0, this.len); }
+  }
+
+  function gifPalette() {
+    const p = new Uint8Array(768);
+    for (let i = 0; i < 252; i++) {
+      p[i * 3] = Math.floor(i / 42) * 51; p[i * 3 + 1] = Math.round(Math.floor(i % 42 / 6) * 42.5); p[i * 3 + 2] = (i % 6) * 51;
+    }
+    return p;
+  }
+
+  function quantize(px) {
+    const out = new Uint8Array(px.length / 4);
+    for (let i = 0, j = 0; j < out.length; i += 4, j++)
+      out[j] = Math.round(px[i] / 51) * 42 + Math.round(px[i + 1] / 42.5) * 6 + Math.round(px[i + 2] / 51);
+    return out;
+  }
+
+  // Variable-width LZW, written as GIF data sub-blocks (min code size 8)
+  function writeLzw(out, indices) {
+    const CLEAR = 256, EOI = 257, block = new Uint8Array(255), dict = new Map();
+    let codeSize = 9, next = 258, acc = 0, nbits = 0, blen = 0;
+    const flushByte = b => { block[blen++] = b; if (blen === 255) { out.byte(255); out.bytes(block); blen = 0; } };
+    const emit = code => { acc |= code << nbits; nbits += codeSize; while (nbits >= 8) { flushByte(acc & 255); acc >>>= 8; nbits -= 8; } };
+    out.byte(8);
+    emit(CLEAR);
+    let prefix = indices[0];
+    for (let i = 1; i < indices.length; i++) {
+      const k = indices[i], key = prefix << 8 | k, code = dict.get(key);
+      if (code !== undefined) { prefix = code; continue; }
+      emit(prefix);
+      if (next === 4096) { emit(CLEAR); dict.clear(); next = 258; codeSize = 9; }
+      else { if (next >= 1 << codeSize) codeSize++; dict.set(key, next++); }
+      prefix = k;
+    }
+    emit(prefix); emit(EOI);
+    if (nbits > 0) flushByte(acc & 255);
+    if (blen) { out.byte(blen); out.bytes(block.subarray(0, blen)); }
+    out.byte(0);
+  }
+
+  async function encodeGif({ frames, W, H, fps }, onProgress) {
+    const out = new ByteWriter();
+    out.str('GIF89a'); out.u16(W); out.u16(H); out.byte(0xF7); out.byte(0); out.byte(0); out.bytes(gifPalette());
+    out.byte(0x21); out.byte(0xFF); out.byte(11); out.str('NETSCAPE2.0'); out.byte(3); out.byte(1); out.u16(0); out.byte(0); // loop forever
+    const delay = Math.max(2, Math.round(100 / fps));
+    for (let f = 0; f < frames.length; f++) {
+      onProgress(f + 1, frames.length);
+      await new Promise(r => setTimeout(r)); // let the status line repaint
+      out.byte(0x21); out.byte(0xF9); out.byte(4); out.byte(0x04); out.u16(delay); out.byte(0); out.byte(0);
+      out.byte(0x2C); out.u16(0); out.u16(0); out.u16(W); out.u16(H); out.byte(0);
+      writeLzw(out, quantize(frames[f].data));
+    }
+    out.byte(0x3B);
+    return new Blob([out.result()], { type: 'image/gif' });
+  }
+
+  // ───────────── Video export (MediaRecorder, real time) ─────────────
+
+  function pickVideoType() {
+    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) return '';
+    return VIDEO_TYPES.find(t => MediaRecorder.isTypeSupported(t)) || '';
+  }
+
+  const videoLoops = a => Math.max(1, Math.ceil(VIDEO_MIN_SECONDS * a.fps / a.frames.length));
+
+  function recordVideo(a, type) {
+    const { canvas, ctx } = makeCanvas(a.W, a.H);
+    ctx.putImageData(a.frames[0], 0, 0);
+    const stream = canvas.captureStream(a.fps);
+    const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: VIDEO_BITRATE });
+    const chunks = [], total = videoLoops(a) * a.frames.length;
+    return new Promise((resolve, reject) => {
+      rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+      rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); resolve(new Blob(chunks, { type: type.split(';')[0] })); };
+      rec.onerror = e => reject(e.error || new Error('MediaRecorder'));
+      rec.start();
+      const t0 = performance.now();
+      let shown = 0;
+      const tick = () => {
+        const i = Math.floor((performance.now() - t0) * a.fps / 1000);
+        if (i >= total) { rec.stop(); return; }
+        if (i !== shown) { ctx.putImageData(a.frames[i % a.frames.length], 0, 0); shown = i; }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  async function runExport(task) {
+    if (busy) { setStatus(TXT.busy); return; }
+    if (!anim) return;
+    busy = true;
+    try { await task(anim); }
+    catch (e) { setStatus(TXT.exportFailed(e.message || e)); }
+    finally { busy = false; }
+  }
+
+  // ───────────── UI ─────────────
+
+  const setStatus = msg => { $('status').textContent = msg; };
+  const show = (selector, visible) => document.querySelectorAll(selector).forEach(el => { el.hidden = !visible; });
+
+  function render() {
+    clearTimeout(renderTimer);
+    const token = ++renderToken, mode = $('mode').value;
+    if (mode === 'static') { stopPlayback(); anim = null; renderStatic(); return; }
+    setStatus(TXT.rendering);
+    // Wait for the status line to paint before the (blocking) frame generation
+    requestAnimationFrame(() => setTimeout(() => { if (token === renderToken) renderAnimation(mode); }));
+  }
+
+  function scheduleRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(render, $('mode').value === 'static' ? 0 : ANIM_RENDER_DELAY);
+  }
+
+  function syncMode() {
+    const animated = $('mode').value !== 'static';
+    show('[data-static]', !animated);
+    show('[data-anim]', animated);
+    show('[data-fragments]', animated && $('mode').value !== 'complementary');
+    show('[data-complementary]', $('mode').value === 'complementary');
+  }
+
+  // Grey out the inputs of the disabled layers
+  function syncToggles() {
+    $('wm').disabled = !$('wmOn').checked;
+    $('decoy').disabled = !$('decoysOn').checked;
+  }
+
+  function syncResolution() {
+    show('[data-custom]', $('res').value === 'custom');
+    $('oResW').textContent = $('resW').value + ' px'; $('oResH').textContent = $('resH').value + ' px';
+  }
+
+  function syncOutputs() {
+    $('oDist').textContent = $('dist').value; $('oNoise').textContent = $('noise').value;
+    $('oDecoy').textContent = $('decoy').value; $('sizeNum').value = $('size').value;
+    $('oFrames').textContent = $('frames').value; $('oFps').textContent = $('fps').value;
+    $('oFrag').textContent = $('frag').value + ' %'; $('oDyn').textContent = $('dyn').value;
+    $('oGroups').textContent = $('groups').value;
+  }
+
+  // Typed font size: applied live once it is in range, clamped when the field is left
+  function applyTypedSize(clamp) {
+    const box = $('sizeNum'), slider = $('size'), min = +slider.min, max = +slider.max;
+    const typed = Math.round(parseFloat(box.value));
+    const valid = Number.isFinite(typed) && typed >= min && typed <= max;
+    if (!valid && !clamp) return; // the user is still typing
+    const v = Number.isFinite(typed) ? Math.min(max, Math.max(min, typed)) : +slider.value;
+    if (clamp) box.value = v;
+    if (+slider.value !== v) { slider.value = v; scheduleRender(); }
+  }
+
+  $('gen').addEventListener('click', render);
+  $('again').addEventListener('click', () => { seed = (Math.random() * 2 ** 32) >>> 0; render(); });
+  ['dist', 'noise', 'decoy', 'size', 'frames', 'frag', 'dyn', 'groups'].forEach(id =>
+    $(id).addEventListener('input', () => { syncOutputs(); scheduleRender(); }));
+  ['wmOn', 'decoysOn', 'linesOn'].forEach(id => $(id).addEventListener('change', () => { syncToggles(); scheduleRender(); }));
+  $('randomCuts').addEventListener('change', scheduleRender);
+  // Changing the speed only changes playback, the frames stay the same
+  $('fps').addEventListener('input', () => { syncOutputs(); if (anim) { anim.fps = +$('fps').value; startPlayback(); } });
+  $('sizeNum').addEventListener('input', () => applyTypedSize(false));
+  $('sizeNum').addEventListener('change', () => applyTypedSize(true));
+  $('wm').addEventListener('change', render);
+  $('mode').addEventListener('change', () => { syncMode(); render(); });
+  // Custom sliders start from the last preset, so switching to "Custom" keeps the current image size
+  let lastPreset = getResolution();
+  $('res').addEventListener('change', () => {
+    if ($('res').value === 'custom') [$('resW').value, $('resH').value] = lastPreset;
+    else lastPreset = getResolution();
+    syncResolution(); render();
+  });
+  // Large sizes are slow to render: update the label while dragging, render on release
+  ['resW', 'resH'].forEach(id => {
+    $(id).addEventListener('input', syncResolution);
+    $(id).addEventListener('change', render);
+  });
+
+  $('dl').addEventListener('click', () => {
+    try {
+      const a = document.createElement('a');
+      a.href = $('out').src; a.download = FILE_BASE + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setStatus(TXT.dlStarted);
+    } catch (e) { setStatus(TXT.dlBlocked); }
+  });
+  $('cp').addEventListener('click', () => {
+    $('cv').toBlob(blob => {
+      if (!navigator.clipboard || !window.ClipboardItem) { setStatus(TXT.copyNA); return; }
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+        .then(() => setStatus(TXT.copied))
+        .catch(() => setStatus(TXT.copyRefused));
+    }, 'image/png');
+  });
+  $('dlGif').addEventListener('click', () => runExport(async a => {
+    const blob = await encodeGif(a, (i, n) => setStatus(TXT.gifProgress(i, n)));
+    downloadBlob(blob, FILE_BASE + '.gif');
+    setStatus(TXT.gifDone(Math.round(blob.size / 1024)));
+  }));
+  $('dlVideo').addEventListener('click', () => runExport(async a => {
+    const type = pickVideoType();
+    if (!type) { setStatus(TXT.videoNA); return; }
+    setStatus(TXT.videoProgress(Math.round(videoLoops(a) * a.frames.length / a.fps)));
+    const blob = await recordVideo(a, type), ext = type.includes('mp4') ? 'mp4' : 'webm';
+    downloadBlob(blob, `${FILE_BASE}.${ext}`);
+    setStatus(TXT.videoDone(Math.round(blob.size / 1024), ext));
+  }));
+
+  syncOutputs(); syncResolution(); syncMode(); syncToggles(); render();
+})();
+</script>
